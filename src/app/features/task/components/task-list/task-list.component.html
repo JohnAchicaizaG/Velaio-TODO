@@ -1,0 +1,53 @@
+<div class="bg-white shadow-md h-screen overflow-y-auto rounded-lg p-4 w-full mx-auto flex flex-col au">
+
+  <!-- Filtros -->
+  <div class="p-2 bg-white rounded-lg shadow-md">
+    <div class="flex justify-between items-center mb-2 bg-gray-800 rounded p-3">
+      <p class="text-2xl font-semibold mb-4 text-white">Filtros</p>
+
+    </div>
+    <div class="flex flex-col">
+      <label class="inline-flex items-center">
+        <input type="radio" name="filters" value="all" class="form-radio text-blue-600" (change)="changeFilter('all')"
+          [checked]="filter === 'all'" />
+        <span class="ml-2">Todas</span>
+      </label>
+      <label class="inline-flex items-center mt-2">
+        <input type="radio" name="filters" value="completed" class="form-radio text-blue-600"
+          (change)="changeFilter('completed')" [checked]="filter === 'completed'" />
+        <span class="ml-2">Completadas</span>
+      </label>
+      <label class="inline-flex items-center mt-2">
+        <input type="radio" name="filters" value="pending" class="form-radio text-blue-600"
+          (change)="changeFilter('pending')" [checked]="filter === 'pending'" />
+        <span class="ml-2">Pendientes</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Listado de tareas -->
+  <div class="w-full bg-slate-300 p-3 rounded-md mb-3 mt-11" *ngFor="let task of tasks$ | async">
+    <div class="flex justify-between items-center mb-2 bg-gray-800 rounded-sm p-3">
+      <p class="text-2xl font-bold h-full flex-grow text-white">{{ task.nameTask }}</p>
+      <input type="checkbox" class="form-checkbox h-7 w-7 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+        [checked]="task.check" (change)="updateTaskStatus(task)" />
+    </div>
+    <div class="ml-2">
+      <p class="text-gray-600">Fecha: {{ task.endDate | date:'mediumDate' }}</p>
+      <p class="text-xl">Personas Asociadas</p>
+    </div>
+
+    <!-- Personas Asociadas -->
+    <div class="shadow-lg rounded-lg p-4 bg-gray-100 mb-3 mt-3" *ngFor="let person of task.associatedPersons">
+      <p class="text-lg font-semibold mb-1">Nombre: <span class="text-gray-800">{{ person.fullName }}</span></p>
+      <p class="text-lg font-semibold mb-1">Edad: <span class="text-gray-800">{{ person.age }}</span></p>
+      <p class="text-lg font-semibold mb-1">Habilidades</p>
+      <div class="flex flex-wrap bg-gradient-to-r from-gray-300 items-center to-gray-700 rounded-lg px-7 py-4">
+        <span *ngFor="let skill of person.skills"
+          class="bg-green-800 text-white rounded-full px-3 py-1 text-sm mr-2 mb-2">
+          {{ skill }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

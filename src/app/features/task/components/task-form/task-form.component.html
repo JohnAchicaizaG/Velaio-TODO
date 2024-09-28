@@ -1,0 +1,125 @@
+<div class="flex flex-col mb-4 shadow-lg p-6 bg-white rounded-lg h-screen overflow-y-auto">
+  <form [formGroup]="myTask" (ngSubmit)="onSubmit()">
+
+    <!-- Título -->
+    <div class="flex justify-between items-center mb-2 bg-gray-800 rounded p-3">
+      <h1 class="text-2xl font-bold mb-4 text-center text-white">Crear Tarea</h1>
+    </div>
+
+    <!-- Nombre de la tarea -->
+    <label for="nameTask" class="block text-sm font-medium text-gray-700 mb-2">Nombre de la tarea</label>
+    <input type="text" id="nameTask" formControlName="nameTask"
+      class="mt-1 mb-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 p-2"
+      placeholder="Escriba el nombre de la tarea" />
+
+    <!-- Fecha límite -->
+    <label for="endDate" class="block text-sm font-medium text-gray-700 mb-1 mt-2">Fecha límite</label>
+    <input type="date" id="endDate" formControlName="endDate"
+      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 p-2"
+      placeholder="Escribe aquí..." />
+
+    <!-- Sección personas asociadas -->
+    <div class="mt-5 p-3 bg-slate-200 rounded-md" formArrayName="associatedPersons">
+      <!-- Título -->
+      <h3 class="text-sm mb-4 text-gray-800 mt-3 ">Personas Asociadas</h3>
+      <div class="bg-slate-200">
+        <div *ngFor="let person of associatedPersons.controls; let i = index" [formGroupName]="i"
+          class="mb-5 mt-10 bg-white p-2 rounded-md">
+
+          <div class="relative flex justify-end">
+            <button
+              class="flex items-center justify-center w-8 h-8 bg-transparent border-2 border-gray-300 rounded-full hover:bg-gray-200 focus:outline-none focus:ring focus:ring-gray-300"
+              (click)="removePerson(i)" onmouseover="this.nextElementSibling.style.opacity='1'"
+              onmouseout="this.nextElementSibling.style.opacity='0'">
+              <span class="text-gray-800 font-bold text-lg">&times;</span>
+            </button>
+            <!-- Tooltip -->
+            <span
+              class="absolute  transform  top-full mt-1 w-14 bg-gray-600 text-white text-center text-sm rounded-lg shadow-lg p-1 opacity-0 transition-opacity duration-200 ease-in-out">
+              Eliminar
+            </span>
+          </div>
+
+          <!-- Nombre completo -->
+          <label for="fullName" class="block text-sm font-medium text-gray-700 ">Nombre completo</label>
+          <input type="text" id="fullName" formControlName="fullName"
+            class="mt-1  block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 p-2"
+            placeholder="Escriba el nombre completo" />
+          <!-- Mensajes de error -->
+          <span *ngIf="person.get('fullName')?.touched && person.get('fullName')?.hasError('required')"
+            class="text-red-500 text-xs italic mt-1 mb-2">
+            La edad es obligatoria.
+          </span>
+          <span *ngIf="person.get('fullName')?.touched && person.get('fullName')?.hasError('minlength')"
+            class="text-red-500 text-xs italic mt-1 mb-2">
+            Debe contener al menos 5 caracteres
+          </span>
+          <span *ngIf="person.hasError('duplicateName') && person.get('fullName')?.touched"
+            class="text-red-500 text-xs italic mt-1 mb-2">
+            Ya existe otra persona con este nombre.
+          </span>
+
+          <!-- Edad -->
+          <label for="age" class="block text-sm font-medium text-gray-700 mb-2 mt-2">Edad</label>
+          <input type="number" id="age" formControlName="age"
+            class="mt-1  block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 p-2"
+            placeholder="Escriba tu edad" />
+          <!-- Mensajes de error -->
+          <span *ngIf="person.get('age')?.touched && person.get('age')?.hasError('required')"
+            class="text-red-500 text-xs italic mt-1 mb-2">
+            La edad es obligatoria.
+          </span>
+          <span *ngIf="person.get('age')?.hasError('min')" class="text-red-500 text-xs italic mt-1 mb-2">
+            Debe ser mayor de 18 años.
+          </span>
+
+          <!-- Habilidades -->
+          <div formArrayName="skills" class="flex flex-col gap-3 mt-3">
+            <div *ngFor="let skill of getSkills(i).controls; let j = index"
+              class="flex flex-row items-end gap-3 w-full">
+              <div class="w-full">
+                <label for="skill-{{ i }}-{{ j }}" class="block text-sm font-medium text-gray-700 mb-2">Habilidad {{ j +
+                  1
+                  }}</label>
+                <input type="text" [formControlName]="j" id="skill-{{ i }}-{{ j }}"
+                  class="mt-1  block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 p-2"
+                  placeholder="Agrega una habilidad" />
+              </div>
+
+              <button type="button" (click)="removeSkill(i, j)" *ngIf="hasValidSkills(i)"
+                class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition duration-300">
+                Eliminar
+              </button>
+            </div>
+          </div>
+          <button type="button" (click)="addSkill(i)" [disabled]="!hasValidSkills(i) && getSkills(i).length !== 0 "
+            class="font-bold mt-4 py-2 px-4 rounded transition duration-300
+                    {{ hasValidSkills(i) ? 'bg-green-900 hover:bg-green-700 text-white'
+                    :
+                    'bg-green-900 text-white disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed' }}">
+            Agregar habilidades
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="py-3 flex gap-3 flex-col sm:flex-row mt-6 sm:justify-between">
+      <button type="button" (click)="addPerson()"
+        class="bg-green-900 text-white font-bold py-2 px-4 rounded hover:bg-gray-700 transition duration-300">Añadir
+        Persona
+      </button>
+
+    </div>
+
+    <!-- Botón de guardar -->
+    <div class="w-full mt-5">
+      <button type="submit" [disabled]="myTask.invalid" [ngClass]="{
+    'bg-gray-800 text-white': !myTask.invalid,
+    'bg-gray-400 text-gray-200 cursor-not-allowed': myTask.invalid
+  }" class="font-bold w-full py-2 px-4 rounded hover:bg-gray-700 transition duration-300">
+        Guardar tarea
+      </button>
+    </div>
+  </form>
+</div>
