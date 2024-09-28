@@ -2,7 +2,7 @@
 
 
 
-[Ver video explicativo en YouTube](https://www.youtube.com/)
+[Ver video explicativo en YouTube](https://youtu.be/DyvC6rx1t1Y)
 
 
 ## Descripción
